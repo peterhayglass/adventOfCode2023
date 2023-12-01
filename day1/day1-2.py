@@ -1,3 +1,8 @@
+from time import perf_counter
+
+
+start = perf_counter()
+
 digit_map = {
     "one": 1, 
     "two": 2, 
@@ -29,3 +34,7 @@ with open("day1/input.txt") as in_file:
         line_val = f"{digits[0]}{digits[-1]}"
         sum += int(line_val)               
     print(sum)
+
+end = perf_counter()
+run_time = (end - start) * 1000
+print(f"took {run_time}ms")
