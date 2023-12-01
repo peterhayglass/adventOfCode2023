@@ -13,17 +13,7 @@ digit_map = {
     "eight": 8, 
     "nine": 9
 }
-reversed_digit_map = {
-    "eno": 1, 
-    "owt": 2, 
-    "eerht": 3, 
-    "ruof": 4,
-    "evif": 5,
-    "xis": 6, 
-    "neves": 7, 
-    "thgie": 8,
-    "enin": 9
-}
+reversed_digit_map = {key[::-1]: value for key, value in digit_map.items()}
 digit_str_len = list(set(len(key) for key in digit_map))
 
 
