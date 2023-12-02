@@ -44,7 +44,7 @@ def main() -> None:
 
             line_val = first * 10 + second
             sum += int(line_val)               
-        print(sum)
+        print(f"Part 2: {sum}")
 
     end = perf_counter()
     run_time = (end - start) * 1000
