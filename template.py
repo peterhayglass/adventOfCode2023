@@ -16,16 +16,17 @@ def part2(input: TextIOWrapper) -> None:
 
 
 def main() -> None:
-    with open(IN_PATH) as in_file:
+    with open(IN_PATH) as in_file:       
         start_p1 = perf_counter()
         part1(in_file)
         p1_run_time = (perf_counter() - start_p1) * 1000
         print(f"Part 1 took {p1_run_time:.4f}ms")
-
+    
+    with open(IN_PATH) as in_file:
         start_p2 = perf_counter()
         part2(in_file)
         p2_run_time = (perf_counter() - start_p2) * 1000
-        print(f"Part 2 took {p2_run_time:.4f}ms")       
+        print(f"Part 2 took {p2_run_time:.4f}ms")        
 
 
 if __name__ == "__main__":
