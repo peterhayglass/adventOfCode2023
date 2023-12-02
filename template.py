@@ -15,7 +15,7 @@ def part2(input: TextIOWrapper) -> None:
     return
 
 
-def main():
+def main() -> None:
     with open(IN_PATH) as in_file:
         start_p1 = perf_counter()
         part1(in_file)

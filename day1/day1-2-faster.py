@@ -31,7 +31,7 @@ def get_first_digit(line: Sequence[str], digit_map: Dict[str, int]) -> int:
     return 0
 
 
-def main():
+def main() -> None:
     start = perf_counter()
 
     with open("day1/input.txt") as in_file:
