@@ -22,7 +22,8 @@ def main() -> None:
         p1_run_time = (perf_counter() - start_p1) * 1000
         print(f"Part 1 took {p1_run_time:.4f}ms")
     
-    with open(IN_PATH) as in_file:
+        in_file.seek(0)
+        
         start_p2 = perf_counter()
         part2(in_file)
         p2_run_time = (perf_counter() - start_p2) * 1000
