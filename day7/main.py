@@ -3,7 +3,6 @@ from io import TextIOWrapper
 from time import perf_counter
 from dataclasses import dataclass
 from functools import cached_property
-from collections import deque
 
 
 CODE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -28,37 +27,35 @@ class Hand():
     cards: str
     
     @cached_property
-    def power(self) -> int:
-        if len(self.counts) == 1:
-            #5 of a kind
-            return 7 
-        if len(self.counts) == 2:
-            if set(self.counts.values()) == set([4,1]):
-                #4 of a kind
-                return 6
-            if set(self.counts.values()) == set([2,3]):
-                #full house
-                return 5
-        if 3 in self.counts.values():
-            #3 of a kind
-            return 4
-        if list(self.counts.values()).count(2) == 2:
-            #two pair
-            return 3
-        if list(self.counts.values()).count(2) == 1:
-            #one pair
-            return 2
-        #else high card
-        return 1
+    def power(self) -> list[int]:
+        return sorted([count for count in self.counts.values()], reverse=True)
     
     @cached_property
     def tiebreaker(self) -> list[int]:
         return [CARD_POWER[card] for card in self.cards]
+    
+    @cached_property
+    def power2(self) -> list[int]:
+        if self.cards == 'JJJJJ':
+            return [5]
+        power_counts = sorted(
+                [count for card, count in self.counts.items() if card != 'J'], 
+                reverse=True
+             )
+        if 'J' in self.cards:
+            Jcount = self.cards.count('J')
+            power_counts[0] += Jcount
+        return power_counts
+    
+    @cached_property
+    def tiebreaker2(self) -> list[int]:
+        return [CARD_POWER_2[card] for card in self.cards]
         
 
 def part1(input: TextIOWrapper) -> None:
     lines = [line for line in input]
     hands: list[Hand] = []
+    
     for line in lines:
         hand_str, bid_str = line.split()
         hands.append(
@@ -71,99 +68,29 @@ def part1(input: TextIOWrapper) -> None:
 
     sorted_hands = sorted(hands, key=lambda hand: (hand.power, hand.tiebreaker))
     winnings = 0
+
     for rank, hand in enumerate(sorted_hands, start=1):
         winnings += rank * hand.bid
     
     print(f"part 1: {winnings}")
-        
-
-
-@dataclass
-class Hand2():
-    counts: dict[str, int]
-    bid: int
-    cards: str
-    
-    def power(self, _counts: dict[str, int]) -> int:
-        if len(_counts) == 1:
-            #5 of a kind
-            return 7 
-        if len(_counts) == 2:
-            if set(_counts.values()) == set([4,1]):
-                #4 of a kind
-                return 6
-            if set(_counts.values()) == set([2,3]):
-                #full house
-                return 5
-        if 3 in _counts.values():
-            #3 of a kind
-            return 4
-        if list(_counts.values()).count(2) == 2:
-            #two pair
-            return 3
-        if list(_counts.values()).count(2) == 1:
-            #one pair
-            return 2
-        #else high card
-        return 1
-    
-
-    @cached_property
-    def Jpower(self) -> int:
-        if 'J' not in self.cards:
-            return self.power(self.counts)
-        elif self.cards == 'JJJJJ':
-            return 7
-        else:
-            _no_j_counts = self.counts.copy()
-            _no_j_counts.pop('J')
-            possible_counts = self.get_Jcounts(_no_j_counts, self.cards.count('J'))
-
-            max_power = -1
-            for count in possible_counts:
-                max_power = max(max_power, self.power(count))
-
-            return max_power
-
-
-    def get_Jcounts(self, _counts: dict[str, int], Jcount: int) -> list[dict[str, int]]:
-        queue = deque([(_counts, Jcount)])
-        generated_counts = []
-
-        while queue:
-            cur_counts, remaining_J = queue.popleft()
-
-            if remaining_J == 0:
-                generated_counts.append(cur_counts)
-            else:
-                for key in cur_counts.keys():
-                    if cur_counts[key] > 0:
-                        new_counts = cur_counts.copy()
-                        new_counts[key] += 1
-                        queue.append((new_counts, remaining_J - 1))
-
-        return generated_counts
-    
-    @cached_property
-    def tiebreaker(self) -> list[int]:
-        return [CARD_POWER_2[card] for card in self.cards]
-
+  
 
 def part2(input: TextIOWrapper) -> None:
     lines = [line for line in input]
-    hands: list[Hand2] = []
+    hands: list[Hand] = []
+
     for line in lines:
         hand_str, bid_str = line.split()
         hands.append(
-            Hand2(
+            Hand(
                 cards = hand_str,
                 counts = {char: hand_str.count(char) for char in set(hand_str)},
                 bid = int(bid_str)
             )
         )
-
-    sorted_hands = sorted(hands, key=lambda hand: (hand.Jpower, hand.tiebreaker))
+    sorted_hands = sorted(hands, key=lambda hand: (hand.power2, hand.tiebreaker2))
     winnings = 0
+
     for rank, hand in enumerate(sorted_hands, start=1):
         winnings += rank * hand.bid
     print(f"part 2: {winnings}")
